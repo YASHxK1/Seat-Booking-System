@@ -1,6 +1,6 @@
-# GreenStitch Frontend Assessment – Seat Booking System
+#  Frontend Assessment – Seat Booking System
 
-This project is my submission for the **GreenStitch Frontend Technical Assessment**, featuring a complete, modern, and fully functional **Seat Booking System** built using React.
+This project is my submission for the ** Frontend Technical Assessment**, featuring a complete, modern, and fully functional **Seat Booking System** built using React.
 
 ---
 
