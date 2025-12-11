@@ -17,6 +17,9 @@ const MAX_SEATS_PER_BOOKING = 8;
 const ROWS = 8;
 const SEATS_PER_ROW = 10;
 
+// Backend API URL
+const API_BASE_URL = 'http://localhost:8080/api/bookings';
+
 const initializeSeats = () => {
     const seats = [];
     for (let row = 0; row < ROWS; row++) {
@@ -158,29 +161,54 @@ const SeatBooking = () => {
         return true;
     };
 
-    const persistBookedSeats = (seatLayout) => {
-        if (typeof window === 'undefined') return;
-        const bookedSeatIds = [];
-        seatLayout.forEach((row) =>
-            row.forEach((seat) => {
-                if (seat.status === SEAT_STATUS.BOOKED) {
-                    bookedSeatIds.push(seat.id);
+    // Save booked seats to backend API
+    const persistBookedSeats = async (seatLayout) => {
+        try {
+            const bookings = [];
+            seatLayout.forEach((row, rowIndex) =>
+                row.forEach((seat, seatIndex) => {
+                    if (seat.status === SEAT_STATUS.BOOKED) {
+                        bookings.push({
+                            seatId: seat.id,
+                            rowNumber: rowIndex,
+                            seatNumber: seatIndex,
+                            status: 'booked'
+                        });
+                    }
+                })
+            );
+
+            if (bookings.length > 0) {
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookings),
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to save bookings to backend');
                 }
-            })
-        );
-        window.localStorage.setItem('bookedSeats', JSON.stringify(bookedSeatIds));
+            }
+        } catch (error) {
+            console.error('Error persisting bookings:', error);
+        }
     };
 
-    const loadPersistedBookings = () => {
-        if (typeof window === 'undefined') return;
-        const storedValue = window.localStorage.getItem('bookedSeats');
-        if (!storedValue) return;
-
+    // Load booked seats from backend API
+    const loadPersistedBookings = async () => {
         try {
-            const parsed = JSON.parse(storedValue);
-            if (!Array.isArray(parsed) || parsed.length === 0) return;
+            const response = await fetch(API_BASE_URL);
+            if (!response.ok) {
+                console.error('Failed to fetch bookings from backend');
+                return;
+            }
 
-            const bookedSet = new Set(parsed);
+            const bookings = await response.json();
+            if (!Array.isArray(bookings) || bookings.length === 0) return;
+
+            const bookedSet = new Set(bookings.map(b => b.seatId));
             setSeats((prevSeats) =>
                 prevSeats.map((row) =>
                     row.map((seat) =>
@@ -188,8 +216,8 @@ const SeatBooking = () => {
                     )
                 )
             );
-        } catch (_error) {
-            window.localStorage.removeItem('bookedSeats');
+        } catch (error) {
+            console.error('Error loading bookings:', error);
         }
     };
 
@@ -287,15 +315,24 @@ const SeatBooking = () => {
         setSeats(clearedSeats);
     };
 
-    const resetSystem = () => {
+    const resetSystem = async () => {
         setStatusMessage('');
         setErrorMessage('');
         setShowConfirmation(false);
         setPendingSummary(null);
         setSeats(initializeSeats());
 
-        if (typeof window !== 'undefined') {
-            window.localStorage.removeItem('bookedSeats');
+        // Call backend API to clear all bookings
+        try {
+            const response = await fetch(`${API_BASE_URL}/reset`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                console.error('Failed to reset bookings on backend');
+            }
+        } catch (error) {
+            console.error('Error resetting bookings:', error);
         }
     };
 
@@ -330,7 +367,6 @@ const SeatBooking = () => {
             <div className="seat-booking-container">
                 <header className="app-header">
                     <div className="header-top-row">
-                        <p className="eyebrow">GreenStitch</p>
                         <button
                             className="theme-toggle-btn"
                             onClick={toggleTheme}
