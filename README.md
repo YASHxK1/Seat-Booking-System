@@ -324,23 +324,3 @@ spring.jpa.show-sql=true
 | **Database connection failed** | Ensure `seat_booking_db` database exists in MySQL |
 
 ---
-
-## 📝 License
-
-This project is created for educational/assessment purposes.
-
----
-
-## 👤 Author
-
-**GreenStitch Frontend Assessment Submission**
-
-For questions or feedback, please review the included `VIDEO_LINK.txt` for a complete walkthrough.
-
----
-
-## 🙏 Acknowledgments
-
-- Original **GreenStitch Frontend Assessment** requirements  
-- Enhanced with **full-stack capabilities** for real-world applicability  
-- Modern UI inspired by contemporary web design trends
