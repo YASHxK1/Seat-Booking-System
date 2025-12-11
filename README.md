@@ -1,12 +1,8 @@
-<<<<<<< HEAD
+
 # 🎫 Seat Booking System
 
 A modern, full-stack seat booking application with a beautiful React frontend and a robust Spring Boot backend with MySQL database persistence.
 =======
-#  Frontend Assessment – Seat Booking System
-
-This project is my submission for the ** Frontend Technical Assessment**, featuring a complete, modern, and fully functional **Seat Booking System** built using React.
->>>>>>> ab931e3005132612efb4660c8b5fcae8455fc4f4
 
 ---
 
